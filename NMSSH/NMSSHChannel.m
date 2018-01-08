@@ -386,8 +386,6 @@
         }
     });
 
-    dispatch_resume(self.source);
-
     int rc = 0;
 
     // Try opening the shell
@@ -406,6 +404,8 @@
         [self closeShell];
         return NO;
     }
+    
+    dispatch_resume(self.source);
 
     NMSSHLogVerbose(@"Shell allocated");
     [self setType:NMSSHChannelTypeShell];
