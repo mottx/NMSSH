@@ -104,6 +104,8 @@
 }
 
 - (void)closeChannel {
+    NMSSHLogVerbose(@"Closing channel");
+
     // Set blocking mode
     if (self.session.rawSession) {
         libssh2_session_set_blocking(self.session.rawSession, 1);
@@ -121,6 +123,8 @@
         libssh2_channel_free(self.channel);
         [self setType:NMSSHChannelTypeClosed];
         [self setChannel:NULL];
+        
+        NMSSHLogVerbose(@"Channel closed");
     }
 }
 
@@ -414,6 +418,8 @@
 }
 
 - (void)closeShell {
+    NMSSHLogVerbose(@"Closing shell");
+
     if (self.source) {
         dispatch_source_cancel(self.source);
 #if !(OS_OBJECT_USE_OBJC)
