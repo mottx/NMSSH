@@ -418,24 +418,26 @@
 }
 
 - (void)closeShell {
-    NMSSHLogVerbose(@"Closing shell");
+    @synchronized (self) {
+        NMSSHLogVerbose(@"Closing shell");
 
-    if (self.source) {
-        dispatch_source_cancel(self.source);
-#if !(OS_OBJECT_USE_OBJC)
-        dispatch_release(self.source);
-#endif
-        [self setSource: nil];
+        if (self.source) {
+            dispatch_source_cancel(self.source);
+             #if !(OS_OBJECT_USE_OBJC)
+            dispatch_release(self.source);
+             #endif
+            [self setSource: nil];
+        }
+
+        if (self.type == NMSSHChannelTypeShell) {
+            // Set blocking mode
+            libssh2_session_set_blocking(self.session.rawSession, 1);
+
+            [self sendEOF];
+        }
+
+        [self closeChannel];
     }
-
-    if (self.type == NMSSHChannelTypeShell) {
-        // Set blocking mode
-        libssh2_session_set_blocking(self.session.rawSession, 1);
-
-        [self sendEOF];
-    }
-
-    [self closeChannel];
 }
 
 - (BOOL)write:(NSString *)command error:(NSError *__autoreleasing *)error {
