@@ -397,6 +397,8 @@
         waitsocket(CFSocketGetNative([self.session socket]), [self.session rawSession]);
     }
 
+    dispatch_resume(self.source);
+
     if (rc != 0) {
         NMSSHLogError(@"Shell request error");
         if (error) {
@@ -408,8 +410,6 @@
         [self closeShell];
         return NO;
     }
-    
-    dispatch_resume(self.source);
 
     NMSSHLogVerbose(@"Shell allocated");
     [self setType:NMSSHChannelTypeShell];
